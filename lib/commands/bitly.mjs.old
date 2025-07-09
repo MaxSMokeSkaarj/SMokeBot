@@ -1,0 +1,19 @@
+import { Context as TelegramContext } from "telegraf"
+import { MessageContext as VKContext} from "vk-io"
+import { post } from "../net.mjs"
+
+/**
+ * 
+ * @param {VKContext | TelegramContext} ctx 
+ */
+
+export const command = async (ctx) => {
+  const text = ctx.text.split(" ").slice(1).join(" ");
+
+  if (!text) return ctx.reply("Введите ссылку в комманду!");
+  const headers = { 'Authorization': `Bearer ${process.env.BITLY_TOKEN}`};
+  const body = { long_url: text };
+  const res = await post(`https://api-ssl.bitly.com/v4/shorten`, body, headers)
+  ctx.reply(res)
+
+}

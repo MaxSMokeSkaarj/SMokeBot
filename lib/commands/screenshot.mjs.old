@@ -1,0 +1,15 @@
+import { Context as TelegramContext } from "telegraf"
+import { MessageContext as VKContext} from "vk-io"
+import { unlink } from "fs"
+
+/**
+ * @param {Object} params
+ * @param {VKContext | TelegramContext} params.ctx
+ * @param { Array<string> } params.params
+ */
+
+export const command = async ({ctx,params}) => {
+  const targetLink = params.slice(1).join(" ");
+  if (!targetLink) return ctx.reply("Введите ссылку в команду")
+  ctx.replyWithPhoto ? ctx.replyWithPhoto({url: `https://mini.s-shot.ru/1920/1080/png/?${targetLink}`}) : ctx.reply ({attachment: `https://mini.s-shot.ru/1920/1080/png/?${targetLink}`})
+}

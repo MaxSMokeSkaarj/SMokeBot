@@ -1,0 +1,174 @@
+[
+	{
+		"name": "Велосипед KAMA",
+		"price": 20000
+	},
+	{
+		"name": "Велосипед BMX",
+		"price": 50000
+	},
+	{
+		"name": "Велосипед Titan",
+		"price": 70000
+	},
+	{
+		"name": "Велосипед Giant Ricon LTD 26",
+		"price": 120000
+	},
+	{
+		"name": "Damich Hirst ButterFly",
+		"price": 200000
+	},
+	{
+		"name": "Мопед SYM SR50",
+		"price": 260000
+	},
+	{
+		"name": "Мопед Honda Dio",
+		"price": 290000
+	},
+	{
+		"name": "Мопед Honda Super Cup",
+		"price": 350000
+	},
+	{
+		"name": "Мотокросс Honda Cross",
+		"price": 400000
+	},
+	{
+		"name": "Мотокросс KTM XC 350f",
+		"price": 455000
+	},
+	{
+		"name": "Мотоцикл Урал",
+		"price": 460000
+	},
+	{
+		"name": "Мотрцикл Юпитер",
+		"price": 480000
+	},
+	{
+		"name": "Honda HV400",
+		"price": 500000
+	},
+	{
+		"name": "Honda Steed 400 VIX",
+		"price": 545000
+	},
+	{
+		"name": "Снегоход Тайга",
+		"price": null
+	},
+	{
+		"name": "Ваз 2105",
+		"price": 600000
+	},
+	{
+		"name": "Ока",
+		"price": null
+	},
+	{
+		"name": "Москвич 412",
+		"price": 630000
+	},
+	{
+		"name": "Автобус Газель",
+		"price": 650000
+	},
+	{
+		"name": "Автобус ПАЗ",
+		"price": null
+	},
+	{
+		"name": "Toyota Carib",
+		"price": 160000
+	},
+	{
+		"name": "Nissan Laurel",
+		"price": 670000
+	},
+	{
+		"name": "Nissan Leaf",
+		"price": 700000
+	},
+	{
+		"name": "Nissan Skyline",
+		"price": 770000
+	},
+	{
+		"name": "BMW 350I",
+		"price": 745000
+	},
+	{
+		"name": "Lexus LX470",
+		"price": 800000
+	},
+	{
+		"name": "Toyota Mark ||",
+		"price": 850000
+	},
+	{
+		"name": "Toyota Land Cruiser Prado",
+		"price": 1000000
+	},
+	{
+		"name": "Nissan Silvia S15",
+		"price": 777000
+	},
+	{
+		"name": "Toyota Supra",
+		"price": 15000000
+	},
+	{
+		"name": "BMW X7",
+		"price": 7000000
+	},
+	{
+		"name": "Mersedes-Benz G Class",
+		"price": 16000000
+	},
+	{
+		"name": "BMW I9",
+		"price": 8500000
+	},
+	{
+		"name": "Tesla Model S",
+		"price": 4500000
+	},
+	{
+		"name": "Tesla Model X",
+		"price": 10000000
+	},
+	{
+		"name": "Tesla CyberTrack",
+		"price": 2800000
+	},
+	{
+		"name": "Ferrari California",
+		"price": 2500000
+	},
+	{
+		"name": "Ferrari 488",
+		"price": 2800000
+	},
+	{
+		"name": "Lamborghini Huracan",
+		"price": 3000000
+	},
+	{
+		"name": "Lamborghini Aventador",
+		"price": 3000000
+	},
+	{
+		"name": "Bugatti Veyron",
+		"price": 200000000
+	},
+	{
+		"name": "Bugatti Chiron",
+		"price": 235000000
+	},
+	{
+		"name": "Bugatti Divo",
+		"price": 350000000
+	}
+]

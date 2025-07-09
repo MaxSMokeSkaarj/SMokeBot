@@ -1,0 +1,24 @@
+import { readFile } from 'fs/promises';
+import { users } from '../db.mjs';
+
+const credits = await readFile('json/credits.json')
+
+
+async function command(ctx, user) {
+  const currentCredit = credits[choiceIndex -1]
+  if (user.money < currentCredit.price) throw new Error('Недостаточно средств');
+  //if (user.credit.length >= 3) throw new Error('Слишком много активных кредитов');
+
+  const startDate = new Date();
+  const endDate = new Date(startDate.getTime() + days * 24 * 60 * 60 * 1000);
+
+  user.credit.push({
+    amount,
+    startDate: startDate.toISOString(),
+    endDate: endDate.toISOString(),
+    interestRate,
+    lastInterestUpdate: Date.now()
+  });
+  user.money += amount; // Выдаём кредит
+  await fs.writeFile(dbPath, JSON.stringify(users, null, 2));
+}

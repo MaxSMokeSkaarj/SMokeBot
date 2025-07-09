@@ -1,0 +1,29 @@
+import { Context as TelegramContext } from "telegraf"
+import { MessageContext as VKContext} from "vk-io"
+import { post } from "../net.mjs"
+
+/**
+ * 
+ * @param {VKContext | TelegramContext} ctx 
+ */
+
+export const command = async (ctx) => {
+  const text = ctx.text.split(" ").slice(1).join(" ");
+
+  if (!text) return ctx.reply("Введите ссылку в комманду!");
+  const headers = { 'Authorization': `Bearer ${process.env.GOOGLE_TTS_TOKEN}`};
+  const body = {
+    input: {
+      text
+    },
+    voice: {
+      languageCode: "ru-RU"
+    },
+    audioConfig: {
+      audioEncoding: "MP3"
+    }
+  };
+  const res = await post(`https://texttospeech.googleapis.com/v1/text:synthesize`, body, headers)
+  ctx.reply(res)
+
+}

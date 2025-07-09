@@ -1,0 +1,54 @@
+[
+	{
+		"name": "Nokia 3310",
+		"price": 800
+	},
+	{
+		"name": "Motorola E398",
+		"price": 1500
+	},
+	{
+		"name": "Sony Xperia Z1",
+		"price": 6000
+	},
+	{
+		"name": "IPhone 4",
+		"price": 9000
+	},
+	{
+		"name": "IPhone 5 Plus",
+		"price": 12000
+	},
+	{
+		"name": "Xiaomi Redmi 5 Plus",
+		"price": 14500
+	},
+	{
+		"name": "Samsung Galaxy J1",
+		"price": 16000
+	},
+	{
+		"name": "IPhone 6",
+		"price": 21000
+	},
+	{
+		"name": "IPhone 7",
+		"price": 29000
+	},
+	{
+		"name": "Xiaomi Note 8 Plus",
+		"price": 35000
+	},
+	{
+		"name": "IPhone XR",
+		"price": 49000
+	},
+	{
+		"name": "IPhone 11",
+		"price": 150000
+	},
+	{
+		"name": "IPhone 7",
+		"price": 29000
+	}
+]
