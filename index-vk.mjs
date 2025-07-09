@@ -70,6 +70,7 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
 
 hearManager.hear(/.*/gmi, async (ctx) => {
   const id = ctx.senderId
+  if (id < 0) return
   let user = await users.read(id);
   if (!user) user = await users.create(id)
   if (user.isBanned) return
