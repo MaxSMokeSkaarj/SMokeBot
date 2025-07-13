@@ -1,6 +1,7 @@
+import * as process from 'process';
 import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
-import { MessageContext as VKContext, VK } from 'vk-io'
+import { MessageContext as VKContext, VK } from 'vk-io';
 import { HearManager } from "@vk-io/hear";
 
 import { users } from "./lib/db.js";
@@ -36,14 +37,14 @@ const getCommandList = async () => {
 **/
 
 hearManager.hear(/\/.*/gmi, async (ctx) => {
-  if (ctx.senderId < 0) return
+  if (ctx.senderId < 0) return;
   const userID = Number(ctx.senderId);
   let user = await users.read(userID);
   
   if (!user) user = await users.create(userID);
   
   const params = ctx.text.replace(/^\//, "").replace('@smokeofanarchy_bot', '').split(' ');
-  const cmd = params[0]
+  const cmd = params[0];
 
   const isReplyed = ctx.replyMessage ? true : false;
 
@@ -62,24 +63,21 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
   const mtime = (await stat(modulePath)).mtime;
   const { command } = await import(`${modulePath}?${mtime}`);
   command({ctx,user,targetUser,params,isReplyed});
-})
+});
 
 /**
  * @param {VKContext} ctx
 **/
 
 hearManager.hear(/.*/gmi, async (ctx) => {
-  const id = ctx.senderId
-  if (id < 0) return
+  const id = ctx.senderId;
+  if (id < 0) return;
   let user = await users.read(id);
-  if (!user) user = await users.create(id)
-  if (user.isBanned) return
-  console.log({id, nick: user.nick, text: ctx.text})
-  const textStart = ctx.text.split(" ").slice(1,1).join(" ").toLowerCase();
+  if (!user) user = await users.create(id);
+  if (user.isBanned) return;
+  console.log({id, nick: user.nick, text: ctx.text});
   const textContent = ctx.text.split(" ").slice(1).join(" ").toLowerCase();
-  if (ctx.text.startsWith("смоук")) ctx.reply(IHABot(textContent))
-})
+  if (ctx.text.startsWith("смоук")) ctx.reply(IHABot(textContent));
+});
 
 vk.updates.start().catch(console.error);
-
-// tests

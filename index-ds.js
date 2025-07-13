@@ -1,10 +1,10 @@
-
+import * as process from 'process';
 import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
-import { Client, GatewayIntentBits, Message } from 'discord.js';
+import { Client, GatewayIntentBits, Message} from 'discord.js';
+
 
 import { users } from "./lib/db.js";
-import { bot as IHABot } from "./lib/IHABot.js";
 
 console.log("bot running");
 
@@ -32,8 +32,10 @@ const getCommandList = async () => {
 };
 
 
-
-client.on('messageCreate', async (/** @type {Message} */ ctx) => {
+/** 
+ * @type {Message}
+*/
+client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot) return;
 
   const userID = Number(ctx.author.id);
@@ -42,7 +44,7 @@ client.on('messageCreate', async (/** @type {Message} */ ctx) => {
   if (!user) user = await users.create(userID);
   
   const params = ctx.content.replace(/^\//, "").replace('@smokeofanarchy_bot', '').split(' ');
-  const cmd = params[0]
+  const cmd = params[0];
 
   const isReplyed = (ctx.reference && ctx.reference.messageId) ? true : false;
 
@@ -57,7 +59,7 @@ client.on('messageCreate', async (/** @type {Message} */ ctx) => {
   const prefix = '/';
   if (ctx.content.startsWith(prefix)) {
 
-      const commands = await getCommandList()
+      const commands = await getCommandList();
     
       if (!commands.some((command) => command === cmd)) return;
     

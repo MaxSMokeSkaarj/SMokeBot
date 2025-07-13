@@ -1,4 +1,4 @@
-
+import * as process from 'process';
 import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
 import { Context as TGContext, Telegraf } from "telegraf";
@@ -32,14 +32,14 @@ const getCommandList = async () => {
  */
 
 bot.command(/.*/gmi, async (ctx) => {
-  if (ctx.from.is_bot) return
+  if (ctx.from.is_bot) return;
   const userID = Number(ctx.from.id);
   let user = await users.read(userID);
   
   if (!user) user = await users.create(userID);
   
   const params = ctx.text.replace(/^\//, "").replace('@smokeofanarchy_bot', '').split(' ');
-  const cmd = params[0]
+  const cmd = params[0];
 
   const isReplyed = ctx.update.message.reply_to_message ? true : false;
 
@@ -65,14 +65,13 @@ bot.command(/.*/gmi, async (ctx) => {
  */
 
 bot.hears(/.*/gmi, async (ctx) => {
-  const id = Number(ctx.from.id)
+  const id = Number(ctx.from.id);
   let user = await users.read(id);
-  if (!user) user = await users.create(id)
-  console.log({id, nick: user.nick, text: ctx.text})
-  if (user.isBanned) return
-  const textStart = ctx.text.split(" ").slice(1,1).join(" ").toLowerCase();
+  if (!user) user = await users.create(id);
+  console.log({id, nick: user.nick, text: ctx.text});
+  if (user.isBanned) return;
   const textContent = ctx.text.split(" ").slice(1).join(" ").toLowerCase();
-  if (ctx.text.startsWith("смоук")) ctx.reply(IHABot(textContent))
+  if (ctx.text.startsWith("смоук")) ctx.reply(IHABot(textContent));
 });
 
 bot.launch();

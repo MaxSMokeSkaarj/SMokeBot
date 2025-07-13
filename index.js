@@ -1,7 +1,13 @@
-import * as readline from "node:readline";
+import * as process from 'process';
+import * as readline from 'node:readline';
 import { spawn } from 'child_process';
-import { buisnessIncome } from "./lib/buisnesses.js";
-import { users } from "./lib/db.js";
+import { createWriteStream } from 'fs';
+
+import { buisnessIncome } from './lib/buisnesses.js';
+import { users } from './lib/db.js';
+
+const botLog = createWriteStream('bot.log', { flags: 'a' });
+const botProcesses = new Map();
 
 let rl = readline.createInterface({
   input: process.stdin,
@@ -19,8 +25,8 @@ let rl = readline.createInterface({
 const safeStringify = (obj, replacer, space) => {
   const seen = new WeakSet();
   return JSON.stringify(obj, (key, value) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) return "[Circular]";
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) return '[Circular]';
       seen.add(value);
     }
     return replacer ? replacer(key, value) : value;
@@ -42,20 +48,19 @@ const typeHandlers = {
     if (result instanceof RegExp) {
       return `Type: RegExp\nResult: ${result.toString()}\n`;
     }
-    return `Type: object\nResult: ${safeStringify(result, null, "\t")}\n`;
+    return `Type: object\nResult: ${safeStringify(result, null, '\t')}\n`;
   },
   function: () => `Type: function\nResult: [Function]\n`,
   default: (result) =>
-    `Type: ${typeof result}\nResult: ${safeStringify(result, null, "\t")}\n`,
+    `Type: ${typeof result}\nResult: ${safeStringify(result, null, '\t')}\n`,
 };
 
-rl.on("line", function (line) {
-  process.stdout.write("\n>");
+rl.on('line', function (line) {
+  console.log('\n>');
   try {
-    // это внутреняя консоль, здесть eval используется специально!!!
     const result = eval(line);
     const handler = typeHandlers[typeof result] || typeHandlers.default;
-    process.stdout.write(handler(result));
+    console.log(handler(result));
   } catch (e) {
     console.error(
       `Error: ${e.name}\nMessage: ${e.message}\nStack: ${e.stack}\n`,
@@ -63,41 +68,56 @@ rl.on("line", function (line) {
   }
 });
 
-buisnessIncome()
-
+buisnessIncome();
 
 // Список файлов ботов
 const botFiles = [
-    'index-tg.js',
-    'index-ds.js',
-    'index-vk.js'
+  'index-tg.js',
+  'index-ds.js',
+  'index-vk.js',
 ];
 
 // Функция для запуска одного бота
 function startBot(file) {
-    const botProcess = spawn('node', ['--env-file=.env', file], {
-        stdio: ['inherit', 'inherit', 'inherit']
-    });
+  const botProcess = spawn('node', ['--env-file=.env', file], {
+    stdio: ['inherit', 'inherit', 'inherit'],
+  });
 
-    botProcess.on('error', (error) => {
-        console.error(`Ошибка при запуске ${file}:`, error);
-    });
+  botProcesses.set(file, botProcess);
+  const startMessage = `${new Date().toISOString()} - Запущен ${file} с PID ${botProcess.pid}\n`;
+  console.log(startMessage);
+  botLog.write(startMessage);
 
-    botProcess.on('exit', (code) => {
-        console.log(`${file} завершился с кодом ${code}`);
-        // Можно добавить логику перезапуска
-    });
+  botProcess.on('error', (error) => {
+    const errorMessage = `${new Date().toISOString()} - Ошибка при запуске ${file}: ${error.message}\n`;
+    console.error(errorMessage);
+    botLog.write(errorMessage);
+    setTimeout(() => startBot(file), 5000); // Перезапуск через 5 секунд
+  });
 
-    console.log(`Запущен ${file} с PID ${botProcess.pid}`);
+  botProcess.on('exit', (code) => {
+    const exitMessage = `${new Date().toISOString()} - ${file} завершился с кодом ${code}\n`;
+    console.log(exitMessage);
+    botLog.write(exitMessage);
+    botProcesses.delete(file);
+    setTimeout(() => startBot(file), 5000); // Перезапуск через 5 секунд
+  });
 }
 
 // Запускаем все боты
 botFiles.forEach(file => {
-    startBot(file);
+  startBot(file);
 });
 
 // Обработка завершения процесса
 process.on('SIGINT', () => {
-    console.log('Завершение работы...');
-    process.exit();
+  console.log('Завершение работы...\n');
+  botProcesses.forEach((proc, file) => {
+    const stopMessage = `${new Date().toISOString()} - Остановка ${file}...\n`;
+    console.log(stopMessage);
+    botLog.write(stopMessage);
+    proc.kill('SIGTERM');
+  });
+  botLog.end();
+  process.exit(0);
 });
