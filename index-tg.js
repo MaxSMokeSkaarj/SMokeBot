@@ -3,8 +3,8 @@ import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
 import { Context as TGContext, Telegraf } from "telegraf";
 
-import { users } from "./lib/db.mjs";
-import { bot as IHABot } from "./lib/IHABot.mjs";
+import { users } from "./lib/db.js";
+import { bot as IHABot } from "./lib/IHABot.js";
 
 const bot = new Telegraf(process.env.TG_BOT_TOKEN);
 
@@ -54,7 +54,7 @@ bot.command(/.*/gmi, async (ctx) => {
 
   if (!commands.some((command) => command === cmd)) return;
 
-  const modulePath = `./lib/commands/${cmd}.mjs`;
+  const modulePath = `./lib/commands/${cmd}.js`;
   const mtime = (await stat(modulePath)).mtime;
   const { command } = await import(`${modulePath}?${mtime}`);
   command({ctx,user,targetUser,params,isReplyed});

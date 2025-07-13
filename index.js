@@ -1,7 +1,7 @@
 import * as readline from "node:readline";
 import { spawn } from 'child_process';
-import { buisnessIncome } from "./lib/buisnesses.mjs";
-import { users } from "./lib/db.mjs";
+import { buisnessIncome } from "./lib/buisnesses.js";
+import { users } from "./lib/db.js";
 
 let rl = readline.createInterface({
   input: process.stdin,
@@ -68,9 +68,9 @@ buisnessIncome()
 
 // Список файлов ботов
 const botFiles = [
-    'index-tg.mjs',
-    'index-ds.mjs',
-    'index-vk.mjs'
+    'index-tg.js',
+    'index-ds.js',
+    'index-vk.js'
 ];
 
 // Функция для запуска одного бота

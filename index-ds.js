@@ -3,8 +3,8 @@ import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
 import { Client, GatewayIntentBits, Message } from 'discord.js';
 
-import { users } from "./lib/db.mjs";
-import { bot as IHABot } from "./lib/IHABot.mjs";
+import { users } from "./lib/db.js";
+import { bot as IHABot } from "./lib/IHABot.js";
 
 console.log("bot running");
 
@@ -61,7 +61,7 @@ client.on('messageCreate', async (/** @type {Message} */ ctx) => {
     
       if (!commands.some((command) => command === cmd)) return;
     
-      const modulePath = `./lib/commands/${cmd}.mjs`;
+      const modulePath = `./lib/commands/${cmd}.js`;
       const mtime = (await stat(modulePath)).mtime;
     
       const { command } = await import(`${modulePath}?${mtime}`);

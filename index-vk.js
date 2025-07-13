@@ -3,8 +3,8 @@ import { basename, extname } from "node:path";
 import { MessageContext as VKContext, VK } from 'vk-io'
 import { HearManager } from "@vk-io/hear";
 
-import { users } from "./lib/db.mjs";
-import { bot as IHABot } from "./lib/IHABot.mjs";
+import { users } from "./lib/db.js";
+import { bot as IHABot } from "./lib/IHABot.js";
 
 const vk = new VK({
   token: process.env.VK_GROUP_TOKEN
@@ -58,7 +58,7 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
 
   if (!commands.some((command) => command === cmd)) return;
 
-  const modulePath = `./lib/commands/${cmd}.mjs`;
+  const modulePath = `./lib/commands/${cmd}.js`;
   const mtime = (await stat(modulePath)).mtime;
   const { command } = await import(`${modulePath}?${mtime}`);
   command({ctx,user,targetUser,params,isReplyed});
