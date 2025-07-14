@@ -1,6 +1,7 @@
 import * as process from 'process';
 import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
+// eslint-disable-next-line no-unused-vars
 import { MessageContext as VKContext, VK } from 'vk-io';
 import { HearManager } from "@vk-io/hear";
 
@@ -22,7 +23,7 @@ const getCommandList = async () => {
   const commands = files
     .filter((file) => {
       const ext = extname(file);
-      return ext === ".mjs";
+      return ext === ".js";
     })
     .map((file) => {
       const ext = extname(file);

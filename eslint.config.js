@@ -9,9 +9,7 @@ export default defineConfig([
     plugins: { js },
     extends: ["js/recommended"],
     rules: {
-      semi: ["error", "always"],
-      "no-unused-vars": ["off"]
-
+      semi: ["error", "always"]
     },
   },
   {

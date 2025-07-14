@@ -4,6 +4,8 @@ import { spawn } from 'child_process';
 import { createWriteStream } from 'fs';
 
 import { buisnessIncome } from './lib/buisnesses.js';
+
+// eslint-disable-next-line no-unused-vars
 import { users } from './lib/db.js';
 
 const botLog = createWriteStream('bot.log', { flags: 'a' });
@@ -109,6 +111,7 @@ botFiles.forEach(file => {
   startBot(file);
 });
 
+/*
 // Обработка завершения процесса
 process.on('SIGINT', () => {
   console.log('Завершение работы...\n');
@@ -121,3 +124,4 @@ process.on('SIGINT', () => {
   botLog.end();
   process.exit(0);
 });
+*/

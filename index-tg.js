@@ -1,6 +1,7 @@
 import * as process from 'process';
 import { readdir,stat } from "fs/promises";
 import { basename, extname } from "node:path";
+// eslint-disable-next-line no-unused-vars
 import { Context as TGContext, Telegraf } from "telegraf";
 
 import { users } from "./lib/db.js";
@@ -17,7 +18,7 @@ const getCommandList = async () => {
   const commands = files
     .filter((file) => {
       const ext = extname(file);
-      return ext === ".mjs";
+      return ext === ".js";
     })
     .map((file) => {
       const ext = extname(file);
