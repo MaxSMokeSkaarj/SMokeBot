@@ -1,13 +1,13 @@
 import * as process from 'process';
-import { readdir,stat } from "fs/promises";
-import { basename, extname } from "node:path";
+import { readdir,stat } from 'fs/promises';
+import { basename, extname } from 'node:path';
 // eslint-disable-next-line no-unused-vars
 import { Client, GatewayIntentBits, Message} from 'discord.js';
 
+import { bot as IHABot } from './lib/IHABot.js';
+import { users } from './lib/db.js';
 
-import { users } from "./lib/db.js";
-
-console.log("bot running");
+console.log('bot running');
 
 const client = new Client({
   intents: [
@@ -18,11 +18,11 @@ const client = new Client({
 });
 
 const getCommandList = async () => {
-  const files = await readdir("lib/commands");
+  const files = await readdir('lib/commands');
   const commands = files
     .filter((file) => {
       const ext = extname(file);
-      return ext === ".js";
+      return ext === '.js';
     })
     .map((file) => {
       const ext = extname(file);
@@ -34,45 +34,44 @@ const getCommandList = async () => {
 
 
 /** 
- * @type {Message}
+ * @param {Message} ctx
 */
 client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot) return;
 
-  const userID = Number(ctx.author.id);
-  let user = await users.read(userID);
-  
+  const userID = ctx.author.id;
+
+  let user = await users.read(userID);  
   if (!user) user = await users.create(userID);
-  
-  const params = ctx.content.replace(/^\//, "").replace('@smokeofanarchy_bot', '').split(' ');
-  const cmd = params[0];
+
+  const params = ctx.content.split(' ');
+  const cmd = params[0].replace(/^\//, '').replace('@smokeofanarchy_bot', '').toLowerCase();
 
   const isReplyed = (ctx.reference && ctx.reference.messageId) ? true : false;
-
-  const targetUserID = isReplyed ? Number(((await ctx.channel.messages.fetch(ctx.reference.messageId)).author.id)) : Number(params[1]);
-  const targetUser = !isNaN(targetUserID) ? await users.read(targetUserID) : null;
+  const targetUserID = isReplyed ? ((await ctx.channel.messages.fetch(ctx.reference.messageId)).author.id) : params[1];
+  const targetUser = await users.read(targetUserID);
+  
+  if (user.isBanned || targetUser?.isBanned) return;
   
   console.log({id: userID, nick: user.nick, text: params.join(' '), targetUserID, targetUser});
   
-  if (user.isBanned || targetUser?.isBanned) return;
-
-  // Обработка команд с префиксом /
   const prefix = '/';
   if (ctx.content.startsWith(prefix)) {
 
-      const commands = await getCommandList();
-    
-      if (!commands.some((command) => command === cmd)) return;
-    
-      const modulePath = `./lib/commands/${cmd}.js`;
-      const mtime = (await stat(modulePath)).mtime;
-    
-      const { command } = await import(`${modulePath}?${mtime}`);
-    
-      command({ctx,user,targetUser,params,isReplyed});
+    const commands = await getCommandList();
+  
+    if (!commands.some((command) => command === cmd)) return;
+  
+    const modulePath = `./lib/commands/${cmd}.js`;
+    const mtime = (await stat(modulePath)).mtime;
+  
+    const { command } = await import(`${modulePath}?${mtime}`);
+  
+    command({ctx,user,targetUser,params,isReplyed});
   }
 
+  const textContent = params.splice(1).join(' ');
+  if (cmd.startsWith('смоук')) ctx.reply(IHABot(textContent));
 });
-
 
 client.login(process.env.DISCORD_BOT_TOKEN);

@@ -1,34 +1,36 @@
-import js from "@eslint/js";
-import globals from "globals";
-import json from "@eslint/json";
-import { defineConfig } from "eslint/config";
+import js from '@eslint/js';
+import globals from 'globals';
+import json from '@eslint/json';
+import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   {
-    files: ["**/*.{js,mjs,cjs}"],
+    files: ['**/*.{js,mjs,cjs}'],
     plugins: { js },
-    extends: ["js/recommended"],
+    extends: ['js/recommended'],
     rules: {
-      semi: ["error", "always"]
+      semi: ['error', 'always'],
+      quotes: ['error', 'single'],
+      indent: ['error', 2],
     },
   },
   {
-    files: ["**/*.{js,mjs,cjs}"],
+    files: ['**/*.{js,mjs,cjs}'],
     languageOptions: { globals: globals.browser },
   },
   {
-    files: ["**/*.json"],
+    files: ['**/*.json'],
     plugins: { json },
-    language: "json/json",
-    extends: ["json/recommended"],
+    language: 'json/json',
+    extends: ['json/recommended'],
     rules: {
-      "json/no-empty-keys": ["off"]
+      'json/no-empty-keys': ['off']
     }
   },
   {
-    files: ["**/*.json5"],
+    files: ['**/*.json5'],
     plugins: { json },
-    language: "json/json5",
-    extends: ["json/recommended"],
+    language: 'json/json5',
+    extends: ['json/recommended'],
   },
 ]);

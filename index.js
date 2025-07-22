@@ -41,9 +41,9 @@ const typeHandlers = {
   boolean: (result) => `Type: boolean\nResult: ${result}\n`,
   bigint: (result) => `Type: bigint\nResult: ${result}n\n`,
   symbol: (result) => `Type: symbol\nResult: ${result.toString()}\n`,
-  undefined: () => `Type: undefined\nResult: undefined\n`,
+  undefined: () => 'Type: undefined\nResult: undefined\n',
   object: (result) => {
-    if (result === null) return `Type: null\nResult: null\n`;
+    if (result === null) return 'Type: null\nResult: null\n';
     if (result instanceof Date) {
       return `Type: Date\nResult: ${result.toISOString()}\n`;
     }
@@ -52,7 +52,7 @@ const typeHandlers = {
     }
     return `Type: object\nResult: ${safeStringify(result, null, '\t')}\n`;
   },
-  function: () => `Type: function\nResult: [Function]\n`,
+  function: () => 'Type: function\nResult: [Function]\n',
   default: (result) =>
     `Type: ${typeof result}\nResult: ${safeStringify(result, null, '\t')}\n`,
 };
