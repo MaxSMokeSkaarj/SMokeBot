@@ -77,6 +77,7 @@ const botFiles = [
   'index-tg.js',
   'index-ds.js',
   'index-vk.js',
+  'index-web.js',
 ];
 
 // Функция для запуска одного бота
