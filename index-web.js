@@ -46,8 +46,13 @@ const server = http.createServer(async (req, res) => {
       }
 
       let user = await users.read(id.toString());
-      if (!user) user = await users.create(id.toString());
-
+      if (!user) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ error: 'Пользователь не найден' }));
+        return;
+      }
+      
       // Проверка secret
       // Предполагается, что в объекте user есть поле secret.
       // Если его нет, нужно реализовать механизм хранения и проверки secret в базе данных.
