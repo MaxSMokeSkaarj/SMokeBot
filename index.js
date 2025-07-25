@@ -7,6 +7,8 @@ import { buisnessIncome } from './lib/buisnesses.js';
 
 // eslint-disable-next-line no-unused-vars
 import { users } from './lib/db.js';
+// eslint-disable-next-line no-unused-vars
+import { bank } from './lib/bank.js';
 
 const botLog = createWriteStream('bot.log', { flags: 'a' });
 const botProcesses = new Map();
