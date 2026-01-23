@@ -43,7 +43,7 @@
     "ip-address": "^9.0.5",
     "jsbn": "^1.1.0",
     "json-stringify-safe": "^5.0.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lodash.snakecase": "^4.1.1",
     "magic-bytes.js": "^1.12.1",
     "matcher": "^3.0.0",
