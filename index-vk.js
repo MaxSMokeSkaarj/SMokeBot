@@ -9,7 +9,7 @@ import { users } from './lib/db.js';
 import { bot as IHABot } from './lib/IHABot.js';
 
 const vk = new VK({
-  token: process.env.VK_GROUP_TOKEN
+  token: process.env.VK_BOT_TOKEN
 });
 
 const hearManager = new HearManager();

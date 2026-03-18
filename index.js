@@ -114,8 +114,9 @@ botFiles.forEach(file => {
   startBot(file);
 });
 
-/*
+
 // Обработка завершения процесса
+/*
 process.on('SIGINT', () => {
   console.log('Завершение работы...\n');
   botProcesses.forEach((proc, file) => {

@@ -1,13 +1,15 @@
 import * as process from 'process';
-import { readdir,stat } from 'fs/promises';
+import { readdir, stat } from 'fs/promises';
 import { basename, extname } from 'node:path';
 // eslint-disable-next-line no-unused-vars
-import { Client, GatewayIntentBits, Message} from 'discord.js';
+import { Client, GatewayIntentBits, Message } from 'discord.js';
 
 import { bot as IHABot } from './lib/IHABot.js';
 import { users } from './lib/db.js';
 
 console.log('bot running');
+
+const PREFIX = '/';
 
 const client = new Client({
   intents: [
@@ -32,46 +34,76 @@ const getCommandList = async () => {
   return commands;
 };
 
-
 /** 
  * @param {Message} ctx
 */
 client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot) return;
 
+  // Получаем ID пользователя и его аккаунт из базы данных (или создаем новый, если его нет)
   const userID = ctx.author.id;
+  let userAccount = await users.read(userID);
+  if (!userAccount) userAccount = await users.create(userID);
 
-  let user = await users.read(userID);  
-  if (!user) user = await users.create(userID);
-
-  const params = ctx.content.split(' ');
+  // Получаем текст команды и аргументы
+  const inText = ctx.content;
+  const params = inText.split(' ');
   const cmd = params[0].replace(/^\//, '').replace('@smokeofanarchy_bot', '').toLowerCase();
 
+  // Получаем пользователя, на которого отвечает команда (если это ответ на сообщение)
   const isReplyed = (ctx.reference && ctx.reference.messageId) ? true : false;
-  const targetUserID = isReplyed ? ((await ctx.channel.messages.fetch(ctx.reference.messageId)).author.id) : params[1];
-  const targetUser = await users.read(targetUserID);
-  
-  if (user.isBanned || targetUser?.isBanned) return;
-  
-  console.log({id: userID, nick: user.nick, text: params.join(' '), targetUserID, targetUser});
-  
-  const prefix = '/';
-  if (ctx.content.startsWith(prefix)) {
+  const replyedUserID = isReplyed ? ((await ctx.channel.messages.fetch(ctx.reference.messageId)).author.id) : params[1];
+  const replyedInText = isReplyed ? (await ctx.channel.messages.fetch(ctx.reference.messageId)).content : null;
+  let replyedUserAccount = await users.read(replyedUserID);
+  if (isReplyed && !replyedUserAccount) replyedUserAccount = await users.create(replyedUserID);
 
+  // не обрабатываем команды от забаненных пользователей или если цель команды - забаненный пользователь
+  if (userAccount.isBanned || replyedUserAccount?.isBanned) return;
+
+  // Логируем информацию о команде для отладки
+  console.log({ id: userID, nick: userAccount.nick, text: params.join(' '), targetUserID: replyedUserID, targetUser: replyedUserAccount?.nick })
+
+  // Проверяем, начинается ли сообщение с префикса команды
+  if (inText.startsWith(PREFIX)) {
+    // Получаем список доступных команд и проверяем, существует ли запрошенная команда
     const commands = await getCommandList();
-  
     if (!commands.some((command) => command === cmd)) return;
-  
+
+    // Загружаем модуль команды и выполняем ее
     const modulePath = `./lib/commands/${cmd}.js`;
     const mtime = (await stat(modulePath)).mtime;
-  
     const { command } = await import(`${modulePath}?${mtime}`);
-  
-    command({ctx,user,targetUser,params,isReplyed});
+
+    const originalUserAccount = JSON.stringify(userAccount);
+
+    const context = {
+      "platform": "ds",
+      "text": inText,
+      "cmd": cmd,
+      "args": params.slice(1),
+      "account": userAccount,
+      "reply": {
+        "text": replyedInText,
+        "account": replyedUserAccount
+      }
+    }
+
+    const responce = await command(context);
+
+    // Если команда изменила аккаунт пользователя, сохраняем изменения в базе данных
+    if (JSON.stringify(userAccount) !== originalUserAccount) {
+      await users.update(userID, userAccount);
+    }
+
+    // Если команда изменила аккаунт пользователя, на которого отвечает, сохраняем изменения в базе данных
+    if (replyedUserAccount && JSON.stringify(replyedUserAccount) !== originalReplyAccount) {
+        await users.update(replyedUserAccount.id, replyedUserAccount);
+    }
+
+    // Если команда вернула текст для ответа, отправляем его
+    if (responce) {
+      ctx.reply(responce);
+    }
+    
   }
-
-  const textContent = params.splice(1).join(' ');
-  if (cmd.startsWith('смоук')) ctx.reply(IHABot(textContent));
 });
-
-client.login(process.env.DISCORD_BOT_TOKEN);
