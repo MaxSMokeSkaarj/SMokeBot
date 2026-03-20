@@ -20,6 +20,9 @@ const originalAccount = JSON.stringify(account);
 
 console.log(JSON.stringify(account) === originalAccount);
 
-account.money += 1000;
+const test = (acc) => {
+  acc.money += 1000;
+  acc.cars.push("Lada Granta");
+}
 
 console.log(JSON.stringify(account) === originalAccount);

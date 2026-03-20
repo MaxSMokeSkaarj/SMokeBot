@@ -1,10 +1,8 @@
-import * as process from 'process';
 import { readdir, stat } from 'fs/promises';
 import { basename, extname } from 'node:path';
 // eslint-disable-next-line no-unused-vars
-import { Client, GatewayIntentBits, Message } from 'discord.js';
+import { Client, GatewayIntentBits, Message as DSContext } from 'discord.js';
 
-import { bot as IHABot } from './lib/IHABot.js';
 import { users } from './lib/db.js';
 
 console.log('bot running');
@@ -35,7 +33,7 @@ const getCommandList = async () => {
 };
 
 /** 
- * @param {Message} ctx
+ * @param {DSContext} params.ctx
 */
 client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot) return;
