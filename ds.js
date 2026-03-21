@@ -73,8 +73,9 @@ client.on('messageCreate', async (ctx) => {
     const { command } = await import(`${modulePath}?${mtime}`);
 
     const originalUserAccount = JSON.stringify(userAccount);
+    const originalReplyAccount = JSON.stringify(replyedUserAccount);
 
-    const context = {
+const context = {
       "platform": "ds",
       "text": inText,
       "cmd": cmd,
