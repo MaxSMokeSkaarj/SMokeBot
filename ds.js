@@ -105,3 +105,8 @@ client.on('messageCreate', async (ctx) => {
     
   }
 });
+
+client.login(process.env.DISCORD_TOKEN).catch((e) => {
+  console.error('Failed to login to Discord:', e);
+  process.exit(1);
+});
