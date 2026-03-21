@@ -101,15 +101,10 @@ const server = http.createServer(async (req, res) => {
 
         const context = {
           platform: "web",
-          send: async () => {}, // Web не отправляет промежуточные сообщения
           text: inText,
           cmd: cmd,
           args: params.slice(1),
           account: userAccount,
-          reply: {
-            text: null,
-            account: replyedUserAccount
-          }
         };
 
         const responseText = await command(context);
