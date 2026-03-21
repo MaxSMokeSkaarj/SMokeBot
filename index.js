@@ -5,11 +5,6 @@ import { createWriteStream } from 'fs';
 
 import { buisnessIncome } from './lib/buisnesses.js';
 
-// eslint-disable-next-line no-unused-vars
-import { users } from './lib/db.js';
-// eslint-disable-next-line no-unused-vars
-import { bank } from './lib/bank.js';
-
 const botLog = createWriteStream('bot.log', { flags: 'a' });
 const botProcesses = new Map();
 
@@ -76,10 +71,10 @@ buisnessIncome();
 
 // Список файлов ботов
 const botFiles = [
-  'index-tg.js',
-  'index-ds.js',
-  'index-vk.js',
-  'index-web.js',
+  'tg.js',
+  'ds.js',
+  'vk.js',
+  'web.js',
 ];
 
 // Функция для запуска одного бота
