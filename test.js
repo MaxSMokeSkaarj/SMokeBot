@@ -13,5 +13,5 @@ function randomWideWithDriftingMean() {
 
 console.log("Примеры значений (с плавающей средней):");
 for (let i = 0; i < 20; i++) {
-  console.log(randomWideWithDriftingMean().toFixed(4));
+  console.log(getDriftingMean().toFixed(2), randomWideWithDriftingMean().toFixed(2));
 }
