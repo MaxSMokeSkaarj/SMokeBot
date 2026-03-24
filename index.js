@@ -4,6 +4,8 @@ import { spawn } from 'child_process';
 import { createWriteStream } from 'fs';
 
 import { buisnessIncome } from './lib/buisnesses.js';
+import { getTax } from './lib/tax.js';
+import { get } from 'node:http';
 
 const botLog = createWriteStream('bot.log', { flags: 'a' });
 const botProcesses = new Map();
@@ -68,6 +70,7 @@ rl.on('line', function (line) {
 });
 
 buisnessIncome();
+getTax();
 
 // Список файлов ботов
 const botFiles = [
