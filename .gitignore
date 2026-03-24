@@ -131,5 +131,4 @@ dist
 .pnp.*
 
 # хранилище юзеров/старые DB
-storage/json/users/*
-storage/json/users*.json
+storage/json/users*
