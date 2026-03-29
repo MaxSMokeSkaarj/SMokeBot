@@ -6,7 +6,6 @@ import { MessageContext as VKContext, VK } from 'vk-io';
 import { HearManager } from '@vk-io/hear';
 
 import { users } from './lib/db.js';
-import { bot as IHABot } from './lib/IHABot.js';
 
 const vk = new VK({
   token: process.env.VK_BOT_TOKEN || ''
@@ -98,18 +97,6 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
   } catch (error) {
     console.error(`Ошибка в команде ${cmd}:`, error);
   }
-});
-
-hearManager.hear(/.*/gmi, async (ctx) => {
-  const userID = ctx.senderId.toString();
-  if (ctx.senderId < 0) return;
-
-  let user = await users.read(userID);
-  if (!user) user = await users.create(userID);
-  
-  if (user.isBanned) return;
-  const textContent = ctx.text?.split(' ').slice(1).join(' ').toLowerCase() || '';
-  if (ctx.text?.startsWith('смоук')) ctx.send(IHABot(textContent));
 });
 
 vk.updates.start().catch(console.error);

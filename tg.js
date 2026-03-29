@@ -5,7 +5,6 @@ import { basename, extname } from 'node:path';
 import { Context as TGContext, Telegraf } from 'telegraf';
 
 import { users } from './lib/db.js';
-import { bot as IHABot } from './lib/IHABot.js';
 
 const bot = new Telegraf(process.env.TG_BOT_TOKEN);
 
@@ -92,22 +91,6 @@ bot.command(/.*/gmi, async (ctx) => {
   } catch (error) {
     console.error(`Ошибка в команде ${cmd}:`, error);
   }
-});
-
-/**
- * @param {TGContext} ctx
- */
-bot.hears(/.*/gmi, async (ctx) => {
-  if (ctx.from.is_bot) return;
-  
-  const userID = ctx.from.id.toString();
-
-  let user = await users.read(userID);
-  if (!user) user = await users.create(userID);
-
-  if (user.isBanned) return;
-  const textContent = ctx.text.split(' ').slice(1).join(' ').toLowerCase();
-  if (ctx.text.startsWith('смоук')) ctx.reply(IHABot(textContent));
 });
 
 bot.launch();

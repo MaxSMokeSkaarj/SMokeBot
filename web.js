@@ -3,7 +3,6 @@ import { readdir, stat } from 'fs/promises';
 import process from 'process';
 import { basename, extname } from 'path';
 import { users } from './lib/db.js';
-import { bot as IHABot } from './lib/IHABot.js';
 
 const getCommandList = async () => {
   const files = await readdir('lib/commands');
@@ -75,8 +74,8 @@ const server = http.createServer(async (req, res) => {
       let responseBody = {};
 
       if (cmd.startsWith('смоук')) {
-        const textContent = params.slice(1).join(' ').toLowerCase();
-        responseBody = { message: IHABot(textContent) };
+        //const textContent = params.slice(1).join(' ').toLowerCase();
+        //responseBody = { message: IHABot(textContent) };
       } else {
         const commands = await getCommandList();
         
