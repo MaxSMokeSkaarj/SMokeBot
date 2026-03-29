@@ -2,7 +2,6 @@ import * as process from 'process';
 import * as readline from 'node:readline';
 import { spawn } from 'child_process';
 import { createWriteStream } from 'fs';
-import { get } from 'node:http';
 
 import { buisnessIncome } from './lib/buisnesses.js';
 import { getTax } from './lib/tax.js';
@@ -114,19 +113,3 @@ function startBot(file) {
 botFiles.forEach(file => {
   startBot(file);
 });
-
-
-// Обработка завершения процесса
-/*
-process.on('SIGINT', () => {
-  console.log('Завершение работы...\n');
-  botProcesses.forEach((proc, file) => {
-    const stopMessage = `${new Date().toISOString()} - Остановка ${file}...\n`;
-    console.log(stopMessage);
-    botLog.write(stopMessage);
-    proc.kill('SIGTERM');
-  });
-  botLog.end();
-  process.exit(0);
-});
-*/
