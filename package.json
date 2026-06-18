@@ -77,7 +77,7 @@
     "web-streams-polyfill": "^4.2.0",
     "webidl-conversions": "^3.0.1",
     "whatwg-url": "^5.0.0",
-    "ws": "^8.19.0",
+    "ws": "^8.21.0",
     "wscat": "^6.1.0"
   },
   "scripts": {
