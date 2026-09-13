@@ -15,6 +15,14 @@ const client = new Client({
   ]
 });
 
+const ensureUser = async userID => {
+  const existing = await users.read(userID);
+  if (existing) return existing;
+
+  const created = await users.create(userID);
+  return created || users.read(userID);
+};
+
 /**
  * @param {DSContext} ctx
  */
@@ -22,8 +30,8 @@ client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot || !ctx.content.startsWith(PREFIX)) return;
 
   const userID = ctx.author.id;
-  let userAccount = await users.read(userID);
-  if (!userAccount) userAccount = await users.create(userID);
+  const userAccount = await ensureUser(userID);
+  if (!userAccount) return;
 
   const inText = ctx.content;
   const params = inText.split(' ');
@@ -37,7 +45,10 @@ client.on('messageCreate', async (ctx) => {
   const replyedInText = isReplyed ? replyMessage.content : null;
 
   let replyedUserAccount = replyedUserID ? await users.read(replyedUserID) : null;
-  if (isReplyed && !replyedUserAccount) replyedUserAccount = await users.create(replyedUserID);
+  if (isReplyed && !replyedUserAccount) {
+    const created = await users.create(replyedUserID);
+    replyedUserAccount = created || await users.read(replyedUserID);
+  }
 
   if (userAccount.isBanned || replyedUserAccount?.isBanned) return;
 
