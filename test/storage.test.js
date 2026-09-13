@@ -8,26 +8,33 @@ import { Database } from '../lib/db.js';
 import { withFileLock } from '../lib/file-lock.js';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 const createTempDirectory = async () => mkdtemp(join(tmpdir(), 'smokebot-test-'));
 
-test('withFileLock serializes concurrent processes', async () => {
+test('withFileLock serializes concurrent calls', async () => {
   const directory = await createTempDirectory();
   const resource = join(directory, 'resource');
   const events = [];
+  let firstLockedResolve;
+  const firstLocked = new Promise(resolve => {
+    firstLockedResolve = resolve;
+  });
 
   try {
-    await Promise.all([
-      withFileLock(resource, async () => {
-        events.push('first:start');
-        await delay(50);
-        events.push('first:end');
-      }),
-      withFileLock(resource, async () => {
-        events.push('second:start');
-        events.push('second:end');
-      })
-    ]);
+    const first = withFileLock(resource, async () => {
+      events.push('first:start');
+      firstLockedResolve();
+      await delay(50);
+      events.push('first:end');
+    });
+
+    await firstLocked;
+
+    const second = withFileLock(resource, async () => {
+      events.push('second:start');
+      events.push('second:end');
+    });
+
+    await Promise.all([first, second]);
 
     assert.deepEqual(events, [
       'first:start',
