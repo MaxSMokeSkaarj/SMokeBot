@@ -1,60 +1,78 @@
 import http from 'http';
 import process from 'process';
+import { timingSafeEqual } from 'crypto';
 
 import { users } from './lib/db.js';
 import { executeCommand } from './lib/command-runner.js';
 
+const MAX_BODY_SIZE = 1024 * 1024;
+const REQUEST_TIMEOUT = 15_000;
+
+const sendJson = (res, statusCode, body) => {
+  res.statusCode = statusCode;
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(body));
+};
+
+const secretsEqual = (left, right) => {
+  if (typeof left !== 'string' || typeof right !== 'string') return false;
+  const leftBuffer = Buffer.from(left);
+  const rightBuffer = Buffer.from(right);
+  return leftBuffer.length === rightBuffer.length && timingSafeEqual(leftBuffer, rightBuffer);
+};
+
 const server = http.createServer(async (req, res) => {
+  req.setTimeout(REQUEST_TIMEOUT, () => req.destroy());
+
   if (req.method !== 'POST') {
-    res.statusCode = 405;
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({ error: 'Метод не поддерживается' }));
+    sendJson(res, 405, { error: 'Метод не поддерживается' });
     return;
   }
 
   let body = '';
+  let bodyTooLarge = false;
+
   req.on('data', chunk => {
+    if (bodyTooLarge) return;
+
     body += chunk.toString();
+    if (Buffer.byteLength(body, 'utf8') > MAX_BODY_SIZE) {
+      bodyTooLarge = true;
+      req.destroy();
+    }
   });
 
   req.on('end', async () => {
+    if (bodyTooLarge) return;
+
     try {
       const data = JSON.parse(body);
       const { id, text, secret } = data;
 
-      if (!id || !text || !secret) {
-        res.statusCode = 400;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Отсутствуют обязательные поля: id, text или secret' }));
+      if (id === undefined || typeof text !== 'string' || !text || typeof secret !== 'string' || !secret) {
+        sendJson(res, 400, { error: 'Некорректные поля: id, text или secret' });
         return;
       }
 
       const userID = id.toString();
-      let userAccount = await users.read(userID);
+      const userAccount = await users.read(userID);
 
       if (!userAccount) {
-        res.statusCode = 404;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Пользователь не найден' }));
+        sendJson(res, 404, { error: 'Пользователь не найден' });
         return;
       }
 
-      if (userAccount.secret !== secret) {
-        res.statusCode = 401;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Неверный secret' }));
+      if (!secretsEqual(userAccount.secret, secret)) {
+        sendJson(res, 401, { error: 'Неверный secret' });
         return;
       }
 
       if (userAccount.isBanned) {
-        res.statusCode = 403;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({ error: 'Пользователь заблокирован' }));
+        sendJson(res, 403, { error: 'Пользователь заблокирован' });
         return;
       }
 
-      const inText = text;
-      const params = inText.split(' ');
+      const params = text.trim().split(/\s+/);
       const cmd = params[0].replace(/^\//, '').toLowerCase();
       const replyedUserID = params[1] || null;
       const replyedUserAccount = replyedUserID ? await users.read(replyedUserID) : null;
@@ -64,10 +82,10 @@ const server = http.createServer(async (req, res) => {
 
       const context = {
         platform: 'web',
-        send: async (message) => {
+        send: async message => {
           responseBody = { message };
         },
-        text: inText,
+        text,
         cmd,
         args: params.slice(1),
         account: userAccount,
@@ -79,23 +97,16 @@ const server = http.createServer(async (req, res) => {
 
       const responseText = await executeCommand(context);
 
-      if (responseText) {
-        responseBody = { message: responseText };
-      }
-
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(responseBody));
+      if (responseText) responseBody = { message: responseText };
+      sendJson(res, 200, responseBody);
     } catch (error) {
       console.error(error);
-      res.statusCode = 500;
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify({ error: 'Внутренняя ошибка сервера' }));
+      if (!res.headersSent) sendJson(res, 500, { error: 'Внутренняя ошибка сервера' });
     }
   });
 });
 
-const PORT = process.env.PORT || 3333;
+const PORT = Number(process.env.PORT) || 3333;
 server.listen(PORT, () => {
   console.log(`Сервер запущен на порту ${PORT}`);
 });
