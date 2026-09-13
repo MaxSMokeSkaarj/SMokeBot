@@ -15,6 +15,14 @@ vk.updates.on('message_new', hearManager.middleware);
 
 console.log('bot running');
 
+const ensureUser = async userID => {
+  const existing = await users.read(userID);
+  if (existing) return existing;
+
+  const created = await users.create(userID);
+  return created || users.read(userID);
+};
+
 /**
  * @param {VKContext} params.ctx
  */
@@ -22,9 +30,8 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
   if (ctx.senderId < 0) return;
 
   const userID = ctx.senderId.toString();
-
-  let userAccount = await users.read(userID);
-  if (!userAccount) userAccount = await users.create(userID);
+  const userAccount = await ensureUser(userID);
+  if (!userAccount) return;
 
   const inText = ctx.text || '';
   const params = inText.split(' ');
@@ -35,7 +42,10 @@ hearManager.hear(/\/.*/gmi, async (ctx) => {
   const replyedInText = isReplyed ? ctx.replyMessage.text : null;
 
   let replyedUserAccount = replyedUserID ? await users.read(replyedUserID) : null;
-  if (isReplyed && !replyedUserAccount) replyedUserAccount = await users.create(replyedUserID);
+  if (isReplyed && !replyedUserAccount) {
+    const created = await users.create(replyedUserID);
+    replyedUserAccount = created || await users.read(replyedUserID);
+  }
 
   if (userAccount.isBanned || replyedUserAccount?.isBanned) return;
 

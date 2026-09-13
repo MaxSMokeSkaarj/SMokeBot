@@ -55,7 +55,6 @@
     "node-fetch": "^2.7.0",
     "object-keys": "^1.1.1",
     "p-timeout": "^4.1.0",
-    "read": "^4.1.0",
     "roarr": "^2.15.4",
     "safe-compare": "^1.1.4",
     "sandwich-stream": "^2.0.2",
@@ -81,7 +80,8 @@
     "wscat": "^6.1.0"
   },
   "scripts": {
-    "test": "node index"
+    "test": "node --test test/*.test.js",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,7 @@
 export interface Credit {
   amountTotal: number;
   amountPaid: number;
+  amountLeft: number;
   dailyPayment: string;
   daysLeft: number;
   nextPaymentDate: string;
@@ -13,9 +14,9 @@ export interface Deposit {
 }
 
 export interface Business {
-  id: string;
+  id: number;
   tier: number;
-  profit: number;
+  income: number;
   timeout: string;
 }
 
@@ -25,7 +26,9 @@ export interface UserTemplate {
   id: string;
   nick: string;
   money: number;
-  workTimeout: string;
+  workTimeout: string | null;
+  jackpotTimeout: string | null;
+  taxTimeout: string | null;
   cars: number[];
   houses: number[];
   phones: number[];
@@ -36,8 +39,6 @@ export interface UserTemplate {
   isBotAdmin: boolean;
   isBanned: boolean;
   banReason: string[];
-  taxTimeout: string;
-  jackpotTimeout: string;
   secret: string;
 }
 
@@ -58,30 +59,12 @@ export interface Command {
   (context: BotContext): Promise<string | void>;
 }
 
-export interface CarShopItem {
+export interface ShopItem {
   name: string;
-  price: number;
+  price?: number | null;
 }
 
-export type CarShop = CarShopItem[];
-
-export interface HouseShopItem {
-  name: string;
-  price: number;
-}
-
-export type HouseShop = HouseShopItem[];
-
-export interface PetShopItem {
-  name: string;
-  price: number;
-}
-
-export type PetShop = PetShopItem[];
-
-export interface PhoneShopItem {
-  name: string;
-  price: number;
-}
-
-export type PhoneShop = PhoneShopItem[];
+export type CarShop = ShopItem[];
+export type HouseShop = ShopItem[];
+export type PetShop = ShopItem[];
+export type PhoneShop = ShopItem[];
