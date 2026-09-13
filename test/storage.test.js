@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, mkdir, readFile, rm, utimes, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -42,6 +42,27 @@ test('withFileLock serializes concurrent calls', async () => {
       'second:start',
       'second:end'
     ]);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('withFileLock does not steal a stale lock owned by a live process', async () => {
+  const directory = await createTempDirectory();
+  const resource = join(directory, 'resource');
+  const lockPath = `${resource}.lock`;
+  const ownerPath = join(lockPath, 'owner');
+  const oldTime = new Date(Date.now() - 10 * 60_000);
+
+  try {
+    await mkdir(lockPath);
+    await writeFile(ownerPath, `${process.pid}\nforeign-token\n`, 'utf8');
+    await utimes(lockPath, oldTime, oldTime);
+
+    await assert.rejects(
+      withFileLock(resource, async () => {}, 100),
+      /Не удалось получить блокировку/
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

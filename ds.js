@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Message as DSContext } from 'discord.js';
+import { Client, GatewayIntentBits } from 'discord.js';
 
 import { users } from './lib/db.js';
 import { executeCommand } from './lib/command-runner.js';
@@ -24,7 +24,7 @@ const ensureUser = async userID => {
 };
 
 /**
- * @param {DSContext} ctx
+ * @param {import('discord.js').Message} ctx
  */
 client.on('messageCreate', async (ctx) => {
   if (ctx.author.bot || !ctx.content.startsWith(PREFIX)) return;
