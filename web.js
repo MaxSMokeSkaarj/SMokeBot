@@ -31,6 +31,7 @@ const server = http.createServer(async (req, res) => {
 
   let body = '';
   let bodyTooLarge = false;
+  let responseEnded = false;
 
   req.on('data', chunk => {
     if (bodyTooLarge) return;
@@ -38,12 +39,14 @@ const server = http.createServer(async (req, res) => {
     body += chunk.toString();
     if (Buffer.byteLength(body, 'utf8') > MAX_BODY_SIZE) {
       bodyTooLarge = true;
+      sendJson(res, 413, { error: 'Тело запроса слишком большое' });
+      responseEnded = true;
       req.destroy();
     }
   });
 
   req.on('end', async () => {
-    if (bodyTooLarge) return;
+    if (bodyTooLarge || responseEnded) return;
 
     try {
       const data = JSON.parse(body);
